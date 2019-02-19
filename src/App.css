@@ -1,33 +1,57 @@
-.App {
-  text-align: center;
+/* Custom Properties ------------------------------------------------------------  */
+:root {
+  --myNumberColumns: 3;
+  --myMarginTop: 97px;
+  --myMarginLeft: 200px;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Containers ------------------------------------------------------------------  */
+.container-gallery {
+  column-count: var(--myNumberColumns);
+  column-gap: 0px;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  grid-gap: 0px;
+
+  /* Navbar-Left */
+  /* margin-left: var(--myMarginLeft); */
+
+  /* Navbar-Top */
+  margin-top: var(--myMarginTop);
 }
 
-.App-link {
-  color: #61dafb;
+.item {
+  height: 100%;
+  margin-bottom: -4px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.container-gallery .galleryImg {
+  width: 100%;
+  height: 100%;
+  transition: 500ms;
+  opacity: 1;
+}
+
+.container-gallery .galleryImg:hover {
+  opacity: 0.8;
+}
+
+/* Size for Tablets y Cellphones ------------------------------------------------- */
+@media screen and (max-width: 767px) {
+  .container-gallery {
+    column-count: 2;
+
+    /* Navbar-Left */
+    /* margin-top: var(--myMarginTop);
+    margin-left: 0px; */
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media screen and (max-width: 479px) {
+  .container-gallery {
+    column-count: 1;
+
+    /* Navbar-Left */
+    /* margin-top: var(--myMarginTop);
+    margin-left: 0px; */
   }
 }

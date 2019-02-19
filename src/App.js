@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import config from './firebase-config'
+import './App.css'
 
 import firebase from 'firebase'
 import 'firebase/firestore'
@@ -10,8 +11,8 @@ firebase.initializeApp(config)
 
 const db = firebase.firestore()
 
-const settings = { timestampsInSnapshots: true}
-  db.settings(settings)
+// const settings = { timestampsInSnapshots: true}
+//   db.settings(settings)
 
 class App extends Component {
 
@@ -85,24 +86,22 @@ class App extends Component {
     console.log(this.state.images)
     return (
       <div>
-        <h3>Images</h3>
-        {this.state.images.map((data, i) => {
-          return(
-            <div key={i}>
-              <img src={data.imageURL} alt="" style={{
-                width: '200px'
-              }}/>
-              <p>{data.imageName}</p>
-            </div>
-          )
-        })}
-
         <FileUploader
         accept="fotos/*"
         storageRef={firebase.storage().ref('fotos')}
         onUploadStart={this.handleUploadStart}
         onUploadSuccess={this.handleUploadSuccess}
         />
+
+        <div className="container-gallery">
+        {this.state.images.map((data, i) => {
+          return(
+            <div className="item" key={i}>
+              <img className="galleryImg" src={data.imageURL} alt="" />
+            </div>
+          )
+        })}
+      </div>
       </div>
     );
   }
