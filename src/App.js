@@ -1,65 +1,108 @@
 import React, { Component } from 'react';
+import config from './firebase-config'
+
 import firebase from 'firebase'
-import FileUpload from './FileUpload'
+import 'firebase/firestore'
+
+import FileUploader from 'react-firebase-file-uploader'
+
+firebase.initializeApp(config)
+
+const db = firebase.firestore()
+
+const settings = { timestampsInSnapshots: true}
+  db.settings(settings)
 
 class App extends Component {
-  constructor() {
-    super()
-    this.state = {
-      user: null
-    }
-    this.handleAuth = this.handleAuth.bind(this)
-    this.handleLogout = this.handleLogout.bind(this)
+
+  state = {
+    images: []
   }
 
-  componentWillMount() {
-    firebase.auth().onAuthStateChanged(user => {
-      this.setState({ user }) // user: user
+  handleUploadStart = () => {
+    console.log('image uploading...')
+  }
+
+  handleUploadSuccess = filename => {
+    console.log(filename)
+
+    firebase.storage().ref('fotos').child(filename).getDownloadURL()
+    .then((url) => {
+      console.log(url)
+
+      firebase.storage().ref('fotos').child(filename).getMetadata()
+      .then((result) => {
+        var newDoc = db.collection('uploadImage').doc()
+
+        newDoc.set({
+          imageName: filename,
+          imageURL: url,
+          docRef: newDoc.id
+        })
+
+        db.collection('uploadImage').doc(newDoc.id).get()
+        .then((result) => {
+          console.log(result.data())
+
+          this.setState({
+            images: this.state.images.concat(result.data())
+          })
+        })
+
+        console.log(result)
+      })
+
+      // this.setState({
+      //   images: this.state.images.concat(url)
+      // })
+
+      console.log(this.state.images)
     })
   }
 
-  handleAuth() {
-    const provider = new firebase.auth.GoogleAuthProvider()
+  componentWillMount() {
+    console.log('mounted')
 
-    firebase.auth().signInWithPopup(provider)
-    .then(result => console.log(`${result.user.email} ha iniciado sesion.`))
-    .catch(error => console.log(`Error ${error.code}: ${error.message}`))
-  }
+    db.collection('uploadImage').get()
+    .then((result) => {
+      console.log(result + "!!!")
+      result.forEach((documents) => {
+        console.log(documents.data().imageName)
 
-  handleLogout() {
-    firebase.auth().signOut()
-    .then(result => console.log(`${result.user.email} ha cerrado sesion.`))
-    .catch(error => console.log(`Error ${error.code}: ${error.message}`))
-  }
+        this.setState({
+          images: this.state.images.concat(documents.data())
+        })
+      })
+    })
 
-  renderLoginButton() {
-    if(this.state.user) {
-      // Si esta logueado.
-      return(
-        <div className="App-intro">
-          <img width="100" src={this.state.user.photoURL} alt={this.state.user.displayName}/>
-          <p className="App-intro">Hola { this.state.user.displayName}!</p>
-          <button onClick={this.handleLogout} className="App-btn">Bye bye</button>
-          <FileUpload />
-        </div>
-      )
-    } else {
-      // Si no esta logueado.
-      return(
-        <div>
-          <button onClick={this.handleAuth} className="App-btn">Iniciar sesion con Google</button>
-        </div>
-      )
-    }
+    // this.setState({
+    //   images: this.state.images.concat(result.data())
+    // })
   }
 
   render() {
+
+    console.log(this.state.images)
     return (
-      <div className="App">
-        <div className="App-header">
-          <h2>Gallery-Fire</h2>
-        </div>
-        { this.renderLoginButton() }
+      <div>
+        <h3>Images</h3>
+        {this.state.images.map((data, i) => {
+          return(
+            <div key={i}>
+              <img src={data.imageURL} alt="" style={{
+                width: '200px'
+              }}/>
+              <p>{data.imageName}</p>
+            </div>
+          )
+        })}
+
+        <FileUploader
+        accept="fotos/*"
+        storageRef={firebase.storage().ref('fotos')}
+        onUploadStart={this.handleUploadStart}
+        onUploadSuccess={this.handleUploadSuccess}
+        />
       </div>
     );
   }
