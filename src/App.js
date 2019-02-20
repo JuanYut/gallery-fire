@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import config from './firebase-config'
-import './App.css'
-
+// import './App.css'
+import Slider from 'react-animated-slider'
+import 'react-animated-slider/build/horizontal.css'
+import './app-animated.css'
+  
 import firebase from 'firebase'
 import 'firebase/firestore'
 
@@ -86,14 +89,23 @@ class App extends Component {
     console.log(this.state.images)
     return (
       <div>
-        <FileUploader
+        
+        <Slider autoplay={1000}>
+          {this.state.images.map((data, i) => (
+            <div key={i}>
+              <img className="galleryImg" src={data.imageURL} alt="" />
+            </div>
+          ))}
+        </Slider>
+
+        {/* <FileUploader
         accept="fotos/*"
         storageRef={firebase.storage().ref('fotos')}
         onUploadStart={this.handleUploadStart}
         onUploadSuccess={this.handleUploadSuccess}
-        />
+        /> */}
 
-        <div className="container-gallery">
+        {/* <div className="container-gallery">
         {this.state.images.map((data, i) => {
           return(
             <div className="item" key={i}>
@@ -101,7 +113,7 @@ class App extends Component {
             </div>
           )
         })}
-      </div>
+      </div> */}
       </div>
     );
   }

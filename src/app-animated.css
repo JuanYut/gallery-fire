@@ -1,0 +1,14 @@
+.slider { 
+  width: 100%;
+  height: 100vh;
+  background-color: pink;
+}
+
+.slider a.previousButton { left: 100px; }
+
+.slider a.nextButton { right: 100px; }
+
+.galleryImg {
+  width: 100%;
+  height: 100vh;
+}
